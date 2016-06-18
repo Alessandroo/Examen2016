@@ -1,9 +1,14 @@
 from django.shortcuts import render
+from django.http import HttpResponse
+
+
+def index(request):
+    return HttpResponse("Hello, world. You're at the polls index.")
 
 
 def simple_num(request, id):
     number = int(id)
-    prime = range(number + 1)
+    prime = [x for x in range(number + 1)]
     prime[0] = prime[1] = 0
     lst = []
     i = 2

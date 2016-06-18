@@ -1,6 +1,8 @@
-from django.conf.urls import patterns, url
-from Eratosphen import views
+from django.conf.urls import url
 
-urlpatterns = patterns('',
-                       url(r'^d+/$', views.simple_num, name='simple_num'),
-                       )
+from . import views
+
+urlpatterns = [
+    url(r'^list/(?P<id>\d+)/$', views.simple_num, name='simple_num'),
+    url(r'^$', views.index, name='index'),
+]
