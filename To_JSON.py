@@ -7,63 +7,68 @@
 # для каждого уровня вложенности.
 
 
-def to_json(obj, indent=1):
-    space = ' '*indent
-    if obj is None:
-        return 'null'
-    elif isinstance(obj, (list, tuple)):
-        if len(obj) == 0:
-            return '[]'
-        else:
-            s = '[' + to_json(obj[0], indent)
-            s = '[' + to_json(obj[0], indent)
-            for i in range(1, len(obj)):
-                s += ',' + to_json(obj[i], indent)
-            return s + ']'
+import json
+
+
+def to_json(obj, indent=1, lvl=0):
+    result = ''
+    space = ' ' * indent
+
+    if isinstance(obj, (list, tuple)):
+        result += space * lvl + '[\n'
+
+        for i in obj:
+            result += to_json(i, indent, lvl + 1) + ',\n'
+
+        result = result[:-2] + '\n' + space * lvl + ']'
     elif isinstance(obj, dict):
-        if len(obj) == 0:
-            return '{}'
-        else:
-            items = iter(obj.items())
-            temp = next(items)
-            s = '{' + to_json(temp[0], indent) + ': ' + to_json(temp[1], indent)
-            for item in items:
-                s += ',' + to_json(item[0], indent) + ': ' + to_json(item[1], indent)
-            return s + '}'
+        result += space * lvl + '{\n'
+
+        for item in obj.items():
+            result += to_json(item[0], indent, lvl + 1) + ': ' + to_json(item[1], indent, 0) + ',\n'
+
+        result = result[:-2] + '\n' + space * lvl + '}'
     elif isinstance(obj, bool):
-        return str(obj).lower()
-    elif isinstance(obj, (int, float)):
-        return str(obj)
-    elif isinstance(obj, str):
-        return '"' + obj.replace('"', r'\"').replace('\n', r'\\n').replace('\t', r'\\t') + '"'
-    else:
-        if hasattr(obj, '__dict__'):
-            return to_json(obj.__dict__, indent)
+        result += space * lvl
+
+        if obj:
+            result += 'true'
         else:
-            raise TypeError('This type {type} can\'t be parsed.'.format(type=str(type(obj))))
+            result += 'false'
+    elif isinstance(obj, (int, float)):
+        result += space * lvl
+        result += str(obj)
+    elif isinstance(obj, str):
+        obj = obj.replace('\\', '\\\\')
+        obj = obj.replace('\n', '\\n')
+        obj = obj.replace('\"', '\\"')
+        obj = obj.replace('\t', '\\t')
+
+        result += space * lvl
+        result += '\"' + obj + '\"'
+    elif obj is None:
+        result += space * lvl
+        result += 'null'
+    else:
+        raise TypeError('Wrong type')
+
+    return result
 
 
 class Aggregator:
     def __init__(self):
         self.total_sum = (15, 45, (15, 48))
         self.elements_count = 0.5e5
-        self.dict = {"a":15, "c":5}
-
-    def add_value(self, value):
-        self.total_sum += value
-        self.elements_count += 1
-
-    def get_average(self):
-        return self.total_sum / self.elements_count
-
-    def get_sum(self):
-        return self.total_sum
+        self.dict = {"a": 15, "c": 5}
 
 
 def main():
     a = Aggregator()
+    x = [1, 2, 2.5e5, 'asd\nas', False, None, {1: True, 2: False}, [123, [1, 2, 3]]]
     try:
-        print(to_json(a, 5))
+        print(json.dumps(x))
+        print("\n\n\n")
+        print(to_json(x, 4))
     except Exception as e:
         print(e)
 
