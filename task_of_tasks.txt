@@ -1,0 +1,4 @@
+count   12 15
+prime   12
+prime   15 17
+prime   27
