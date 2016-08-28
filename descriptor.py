@@ -13,6 +13,7 @@
 # source_path. parser аналогичен прошлому пунктуи разбирает текст ответа построчно.
 import urllib.request
 
+
 class RemoteResult:
     def __init__(self):
         self.type = None
@@ -22,27 +23,40 @@ class RemoteResult:
 
     def __get__(self, instance, owner):
         print('getter')
-        print(self.date)
+        cash = dict()
+        for line in self.date:
+            cash = parser(cash, line)
+        return cash
 
     def __set__(self, instance, value):
         self.type = value.source_type
         self.path = value.source_path
         self.parser = value.parser
         print(self.type, self.path, self.parser)
+        lines = []
         if self.type == 'file':
             with open(self.path) as file:
-                self.date = file.read()
+                for line in file.readlines():
+                    lines.append(line)
+
         if self.type == 'url':
-            wp = urllib.request.urlopen(self.path)
-            self.date = wp.read()
+            page = urllib.request.urlopen(self.path)
+            for line in page.readlines():
+                lines.append(line)
+        self.date = lines
 
 
 class MyClass:
     x = RemoteResult()
 
 
-def parser(*args):
-    return print(*args)
+def parser(date, line):
+    if line is None:
+        print(None)
+        return date
+    else:
+        date[line] = line.upper()
+        return date
 
 
 m = MyClass()
