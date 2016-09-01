@@ -6,7 +6,6 @@
 # get_value() - возвращает результат, если фоновое вычисление завершено, иначе засыпает, пока результат
 # не будет посчитан и потом все равно возвращает его.
 from threading import Thread
-import time
 
 
 def thread_async(function_to_decorate):
@@ -34,7 +33,7 @@ def thread_async(function_to_decorate):
                 else:
                     while not self.is_ready():
                         print('Я в get_value false')
-                        time.sleep(1)
+                        self.join()
                     print("FINISHED")
                     return self.result
 
@@ -47,12 +46,15 @@ def thread_async(function_to_decorate):
 
 
 @thread_async
-def sum(a, b):
-    return a ** 100 + b ** 100
+def factorial(n):
+    fac = 1
+    i = 0
+    while i < n:
+        i += 1
+        fac = fac * i
+    return fac
 
 
 if __name__ == '__main__':
-
-    a = sum(10, 20)
-
+    a = factorial(150000)
     print(a.get_value())
