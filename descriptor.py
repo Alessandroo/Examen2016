@@ -15,23 +15,13 @@ import urllib.request
 
 
 class RemoteResult:
-    def __init__(self):
-        self.type = None
-        self.path = None
-        self.parser = None
+    def __init__(self, type=None, path=None, parser=None):
+        self.type = type
+        self.path = path
+        self.parser = parser
         self.date = None
 
     def __get__(self, instance, owner):
-        print('getter')
-        cash = dict()
-        for line in self.date:
-            cash = parser(cash, line)
-        return cash
-
-    def __set__(self, instance, value):
-        self.type = value.source_type
-        self.path = value.source_path
-        self.parser = value.parser
         print(self.type, self.path, self.parser)
         lines = []
         if self.type == 'file':
@@ -44,10 +34,11 @@ class RemoteResult:
             for line in page.readlines():
                 lines.append(line)
         self.date = lines
-
-
-class MyClass:
-    x = RemoteResult()
+        print('getter')
+        cash = dict()
+        for line in self.date:
+            cash = parser(cash, line)
+        return cash
 
 
 def parser(date, line):
@@ -59,15 +50,10 @@ def parser(date, line):
         return date
 
 
-m = MyClass()
+class MyClass:
+    x = RemoteResult('url', 'https://github.com/Alessandroo/Myts/blob/master/Laba1/Task/Zad2.py', parser)
 
 
-class Mio:
-    def __init__(self):
-        self.source_type = 'url'
-        self.source_path = 'https://github.com/Alessandroo/Myts/blob/master/Laba1/Task/Zad2.py'
-        self.parser = parser
-
-
-m.x = Mio()
-print(m.x)
+if __name__ == '__main__':
+    m = MyClass()
+    print(m.x)
